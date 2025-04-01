@@ -6,7 +6,7 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-  @Transform(({ value }) => value.toString()) // Converts `_id` to string
+  @Transform(({ value }) => value.toString())
   id: string;
 
   @Prop()
