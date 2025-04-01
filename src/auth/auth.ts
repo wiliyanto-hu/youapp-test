@@ -4,10 +4,14 @@ import { User } from 'src/user/user.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from './dto/login.dto';
 import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class Auth {
-  constructor(private userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register(registerDto: RegisterDTO): Promise<User> {
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -18,7 +22,7 @@ export class Auth {
     });
     return newUser;
   }
-  async login(loginDto: LoginDTO): Promise<User | null> {
+  async login(loginDto: LoginDTO): Promise<String | null> {
     const user = await this.userService.findUser(loginDto.username);
 
     if (!user) {
@@ -33,6 +37,9 @@ export class Auth {
       return null;
     }
 
-    return user;
+    const payload = { username: user.username, sub: user.id };
+    const accessToken = this.jwtService.sign(payload);
+
+    return accessToken;
   }
 }

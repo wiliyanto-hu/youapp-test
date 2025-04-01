@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
-  NotFoundException,
   Post,
+  UnauthorizedException,
   ValidationPipe,
 } from '@nestjs/common';
 import { RegisterDTO } from './dto/register.dto';
@@ -19,8 +19,8 @@ export class AuthController {
   }
   @Post('login')
   async login(@Body(new ValidationPipe()) loginDto: LoginDTO) {
-    const user = await this.authService.login(loginDto);
-    if (!user) throw new NotFoundException();
-    return user;
+    const accessToken = await this.authService.login(loginDto);
+    if (!accessToken) throw new UnauthorizedException();
+    return { accessToken };
   }
 }

@@ -6,6 +6,7 @@ import { ProfileModule } from './profile/profile.module';
 import { MessageModule } from './message/message.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
     MessageModule,
     MongooseModule.forRoot('mongodb://localhost'),
     UserModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
