@@ -6,7 +6,10 @@ export type ProfileDocument = HydratedDocument<Profile>;
 @Schema()
 export class Profile {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user_id: Types.ObjectId;
+  userId: Types.ObjectId;
+
+  @Prop()
+  name: string;
 
   @Prop({ enum: ['male', 'female'] })
   gender: string;

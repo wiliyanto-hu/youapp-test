@@ -1,17 +1,9 @@
-import {
-  IsDate,
-  IsEnum,
-  IsMongoId,
-  IsNotEmpty,
-  IsNumber,
-  Min,
-} from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProfileDTO {
-  @IsMongoId()
   @IsNotEmpty()
-  user_id: string; // Reference to User
+  name: string;
 
   @IsEnum(['male', 'female'])
   @IsNotEmpty()
