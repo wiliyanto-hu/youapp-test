@@ -13,4 +13,7 @@ export class ProfileService {
   ): Promise<Profile> {
     return await this.profileModel.create({ ...createProfileDto, userId });
   }
+  async getProfileByUserId(userId: string): Promise<Profile | null> {
+    return await this.profileModel.findOne({ userId });
+  }
 }

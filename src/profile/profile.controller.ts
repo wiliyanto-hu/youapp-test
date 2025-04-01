@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
   Req,
   UseGuards,
@@ -16,8 +17,12 @@ export class ProfileController {
   constructor(private profileService: ProfileService) {}
   @Get('profile')
   @UseGuards(AuthGuard('jwt'))
-  getProfile(@Req() req) {
-    return { message: `Hello, ${req.user.username}!`, userId: req.user.userId };
+  async getProfile(@Req() req) {
+    const profile = await this.profileService.getProfileByUserId(
+      req.user.userId,
+    );
+    if (!profile) throw new NotFoundException('User profile not found');
+    return profile;
   }
 
   @Post('createProfile')
