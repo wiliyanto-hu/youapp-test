@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Profile } from './profile.schema';
 import { CreateProfileDTO } from './dto/createProfile.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { getZodiacAndHoroscope } from './profile.util';
 @Injectable()
 export class ProfileService {
   constructor(@InjectModel('Profile') private profileModel: Model<Profile>) {}
@@ -11,9 +16,32 @@ export class ProfileService {
     createProfileDto: CreateProfileDTO,
     userId: string,
   ): Promise<Profile> {
-    return await this.profileModel.create({ ...createProfileDto, userId });
+    const existingProfile = await this.getProfileByUserId(userId);
+    if (existingProfile) throw new ConflictException('Profile already exist');
+    const birthday = new Date(createProfileDto.birthday);
+    const { horoscope, zodiac } = getZodiacAndHoroscope(birthday);
+    return await this.profileModel.create({
+      ...createProfileDto,
+      userId,
+      horoscope,
+      zodiac,
+      birthday,
+    });
   }
   async getProfileByUserId(userId: string): Promise<Profile | null> {
     return await this.profileModel.findOne({ userId });
+  }
+  async updateProfile(
+    createProfileDto: CreateProfileDTO,
+    userId: string,
+  ): Promise<Profile | null> {
+    const existingProfile = await this.getProfileByUserId(userId);
+    if (!existingProfile) throw new NotFoundException('Profile not exist');
+    const birthday = new Date(createProfileDto.birthday);
+    const { horoscope, zodiac } = getZodiacAndHoroscope(birthday);
+    return await this.profileModel.findOneAndUpdate(
+      { userId },
+      { ...createProfileDto, userId, horoscope, zodiac, birthday },
+    );
   }
 }

@@ -1,5 +1,14 @@
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateProfileDTO {
   @IsNotEmpty()
@@ -9,16 +18,10 @@ export class CreateProfileDTO {
   @IsNotEmpty()
   gender: 'male' | 'female';
 
-  @Type(() => Date) // Converts incoming string to Date
+  @Type(() => Date)
   @IsDate({ message: 'Birthday must be a valid date' })
   @IsNotEmpty()
   birthday: Date;
-
-  @IsNotEmpty()
-  horoscope: string;
-
-  @IsNotEmpty()
-  zodiac: string;
 
   @IsNumber()
   @Min(0, { message: 'Height must be a positive number' })
@@ -33,4 +36,9 @@ export class CreateProfileDTO {
 
   @IsEnum(['kg'])
   weightUnit: 'kg';
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  interests?: string[];
 }

@@ -34,6 +34,9 @@ export class Profile {
 
   @Prop({ enum: ['kg'], default: 'kg' })
   weightUnit: 'kg';
+
+  @Prop({ type: [String], default: [] })
+  interests: string[];
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);
