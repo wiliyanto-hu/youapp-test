@@ -36,16 +36,25 @@ export class ProfileService {
     return await this.profileModel.findOne({ userId });
   }
   async updateProfile(
-    createProfileDto: CreateProfileDTO,
-    userId: string,
+    createProfileParams: CreateProfileParams,
   ): Promise<Profile | null> {
+    const { createProfileDto, userId, coverPhoto, photo } = createProfileParams;
+
     const existingProfile = await this.getProfileByUserId(userId);
     if (!existingProfile) throw new NotFoundException('Profile not exist');
     const birthday = new Date(createProfileDto.birthday);
     const { horoscope, zodiac } = getZodiacAndHoroscope(birthday);
     return await this.profileModel.findOneAndUpdate(
       { userId },
-      { ...createProfileDto, userId, horoscope, zodiac, birthday },
+      {
+        ...createProfileDto,
+        userId,
+        horoscope,
+        zodiac,
+        birthday,
+        coverPhoto,
+        photo,
+      },
     );
   }
 }

@@ -14,9 +14,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { CreateProfileDTO } from './dto/createProfile.dto';
 import { ProfileService } from './profile';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { ProfileFileInterceptor } from './interceptors/photoUpload.interceptor';
 @Controller()
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
@@ -32,25 +30,7 @@ export class ProfileController {
 
   @Post('createProfile')
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'photo', maxCount: 1 },
-        { name: 'coverPhoto', maxCount: 1 },
-      ],
-      {
-        storage: diskStorage({
-          destination: './uploads/profile',
-          filename: (_, file, cb) => {
-            const uniqueSuffix =
-              Date.now() + '-' + Math.round(Math.random() * 1e9);
-            const fileName = uniqueSuffix + extname(file.originalname);
-            cb(null, fileName);
-          },
-        }),
-      },
-    ),
-  )
+  @UseInterceptors(ProfileFileInterceptor())
   async createProfile(
     @Req() req,
     @UploadedFiles()
@@ -72,8 +52,14 @@ export class ProfileController {
 
   @Put('updateProfile')
   @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(ProfileFileInterceptor())
   async updateProfile(
     @Req() req,
+    @UploadedFiles()
+    files: {
+      photo?: Express.Multer.File[];
+      coverPhoto?: Express.Multer.File[];
+    },
     @Body(new ValidationPipe()) createProfileDto: CreateProfileDTO,
   ) {
     const profile = await this.profileService.getProfileByUserId(
@@ -81,7 +67,15 @@ export class ProfileController {
     );
 
     if (!profile) throw new NotFoundException('User profile not found');
-    await this.profileService.updateProfile(createProfileDto, req.user.userId);
+    const photoPath = files?.photo?.[0]?.path;
+    const coverPhotoPath = files?.coverPhoto?.[0]?.path;
+
+    await this.profileService.updateProfile({
+      createProfileDto,
+      userId: req.user.userId,
+      coverPhoto: coverPhotoPath,
+      photo: photoPath,
+    });
     return 'Profile updated successfully';
   }
 }
