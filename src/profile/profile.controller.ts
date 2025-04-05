@@ -4,6 +4,7 @@ import {
   Get,
   NotFoundException,
   Post,
+  Put,
   Req,
   UseGuards,
   ValidationPipe,
@@ -35,5 +36,19 @@ export class ProfileController {
       createProfileDto,
       req.user.userId,
     );
+  }
+
+  @Put('updateProfile')
+  @UseGuards(AuthGuard('jwt'))
+  async updateProfile(
+    @Req() req,
+    @Body(new ValidationPipe()) createProfileDto: CreateProfileDTO,
+  ) {
+    const profile = await this.profileService.getProfileByUserId(
+      req.user.userId,
+    );
+    if (!profile) throw new NotFoundException('User profile not found');
+    await this.profileService.updateProfile(createProfileDto, req.user.userId);
+    return 'Profile updated successfully';
   }
 }
