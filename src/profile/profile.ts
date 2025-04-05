@@ -4,11 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Profile } from './profile.schema';
-import { CreateProfileDTO } from './dto/createProfile.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { getZodiacAndHoroscope } from './profile.util';
 import { CreateProfileParams } from './interfaces/createProfile.interface';
+import { convertPhotoToBase64 } from './utils/photoConverter.util';
 
 @Injectable()
 export class ProfileService {
@@ -33,7 +33,15 @@ export class ProfileService {
     });
   }
   async getProfileByUserId(userId: string): Promise<Profile | null> {
-    return await this.profileModel.findOne({ userId });
+    const profile = await this.profileModel.findOne({ userId });
+    if (!profile) return null;
+
+    const profileObj = profile.toObject();
+    return {
+      ...profileObj,
+      photo: convertPhotoToBase64(profileObj.photo ?? undefined),
+      coverPhoto: convertPhotoToBase64(profileObj.coverPhoto ?? undefined),
+    };
   }
   async updateProfile(
     createProfileParams: CreateProfileParams,

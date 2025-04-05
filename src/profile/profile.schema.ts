@@ -38,11 +38,11 @@ export class Profile {
   @Prop({ type: [String], default: [] })
   interests: string[];
 
-  @Prop({ default: null })
-  photo?: string;
+  @Prop({ type: String, default: null })
+  photo?: string | null;
 
-  @Prop({ default: null })
-  coverPhoto?: string;
+  @Prop({ type: String, default: null })
+  coverPhoto?: string | null;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);
