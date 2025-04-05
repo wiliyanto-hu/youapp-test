@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -6,6 +7,8 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { WsJwtGuard } from './guard/chat.guards';
+@UseGuards(WsJwtGuard)
 @WebSocketGateway(5000)
 export class ChatGateway {
   @WebSocketServer()
