@@ -32,6 +32,7 @@ export class CreateProfileDTO {
   @IsNotEmpty()
   birthday: Date;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0, { message: 'Height must be a positive number' })
   height: number;
@@ -41,6 +42,7 @@ export class CreateProfileDTO {
   })
   heightUnit: 'cm' | 'inches';
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0, { message: 'Weight must be a positive number' })
   weight: number;

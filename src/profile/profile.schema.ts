@@ -37,6 +37,12 @@ export class Profile {
 
   @Prop({ type: [String], default: [] })
   interests: string[];
+
+  @Prop({ default: null })
+  photo?: string;
+
+  @Prop({ default: null })
+  coverPhoto?: string;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

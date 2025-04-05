@@ -8,14 +8,16 @@ import { CreateProfileDTO } from './dto/createProfile.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { getZodiacAndHoroscope } from './profile.util';
+import { CreateProfileParams } from './interfaces/createProfile.interface';
+
 @Injectable()
 export class ProfileService {
   constructor(@InjectModel('Profile') private profileModel: Model<Profile>) {}
 
   async createProfile(
-    createProfileDto: CreateProfileDTO,
-    userId: string,
+    createProfileParams: CreateProfileParams,
   ): Promise<Profile> {
+    const { createProfileDto, userId, coverPhoto, photo } = createProfileParams;
     const existingProfile = await this.getProfileByUserId(userId);
     if (existingProfile) throw new ConflictException('Profile already exist');
     const birthday = new Date(createProfileDto.birthday);
@@ -26,6 +28,8 @@ export class ProfileService {
       horoscope,
       zodiac,
       birthday,
+      coverPhoto,
+      photo,
     });
   }
   async getProfileByUserId(userId: string): Promise<Profile | null> {
