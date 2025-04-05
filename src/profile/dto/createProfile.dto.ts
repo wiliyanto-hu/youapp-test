@@ -10,6 +10,15 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
+export enum WeightUnit {
+  KG = 'kg',
+}
+
+export enum HeightUnit {
+  CM = 'cm',
+  INCHES = 'inches',
+}
+
 export class CreateProfileDTO {
   @IsNotEmpty()
   name: string;
@@ -27,14 +36,18 @@ export class CreateProfileDTO {
   @Min(0, { message: 'Height must be a positive number' })
   height: number;
 
-  @IsEnum(['cm', 'inches'])
+  @IsEnum(HeightUnit, {
+    message: `heightUnit must be one of the following values: ${Object.values(HeightUnit).join(', ')}`,
+  })
   heightUnit: 'cm' | 'inches';
 
   @IsNumber()
   @Min(0, { message: 'Weight must be a positive number' })
   weight: number;
 
-  @IsEnum(['kg'])
+  @IsEnum(WeightUnit, {
+    message: `weightUnit must be one of the following values: ${Object.values(WeightUnit).join(', ')}`,
+  })
   weightUnit: 'kg';
 
   @IsOptional()
