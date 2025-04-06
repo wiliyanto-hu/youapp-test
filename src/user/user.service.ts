@@ -8,9 +8,9 @@ import { RegisterDTO } from 'src/auth/dto/register.dto';
 export class UserService {
   constructor(@InjectModel('User') private userModel: Model<User>) {}
 
-  async findUser(usernameOrEmail: string): Promise<User | null> {
+  async findUser({ username, email }): Promise<User | null> {
     return await this.userModel.findOne({
-      $or: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
+      $or: [{ email }, { username }],
     });
   }
 
