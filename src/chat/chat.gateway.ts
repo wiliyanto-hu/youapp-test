@@ -11,13 +11,17 @@ import { Server } from 'socket.io';
 import { CustomSocket, JWTPayload } from './interfaces/chatSocket.interface';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
+import { ChatService } from './chat.service';
 
 @WebSocketGateway(5000)
 export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private chatService: ChatService,
+  ) {}
 
   async handleConnection(client: CustomSocket) {
     const token = client.handshake?.headers?.authorization?.split(' ')[1];
@@ -40,8 +44,8 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('sendPrivateMessage')
-  handlePrivateMessage(
-    @MessageBody() data: { recipient: string; message: string },
+  async handlePrivateMessage(
+    @MessageBody() data: { recipientId: string; message: string },
     @ConnectedSocket() client: CustomSocket,
   ) {
     if (!client.user) throw new WsException('Unauthorized');
@@ -51,7 +55,10 @@ export class ChatGateway implements OnGatewayConnection {
       senderId,
       message: data.message,
     };
-
-    this.server.to(data.recipient).emit('receivePrivateMessage', payload);
+    await this.chatService.saveMessage({
+      ...payload,
+      recipientId: data.recipientId,
+    });
+    this.server.to(data.recipientId).emit('receivePrivateMessage', payload);
   }
 }
