@@ -13,9 +13,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetMessagesDto } from './dto/getMessages.dto';
 import { SendMessageDto } from './dto/sendMessage.dto';
 import { ChatGateway } from './chat.gateway';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller()
 @UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('Authorization')
 export class ChatController {
   constructor(
     private chatService: ChatService,
