@@ -6,8 +6,9 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { WsJwtGuard } from './guard/chat.guards';
+import { CustomSocket } from './interfaces/chatSocket.interface';
 @UseGuards(WsJwtGuard)
 @WebSocketGateway(5000)
 export class ChatGateway {
@@ -16,9 +17,14 @@ export class ChatGateway {
 
   @SubscribeMessage('sendMessage')
   handleMessage(
-    @MessageBody() data: { sender: string; message: string },
-    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { message: string; recipient: string },
+    @ConnectedSocket() client: CustomSocket,
   ) {
-    this.server.emit('receiveMessage', data);
+    const user = client.user;
+
+    this.server.emit('receiveMessage', {
+      sender: user?.userId,
+      message: data.message,
+    });
   }
 }
