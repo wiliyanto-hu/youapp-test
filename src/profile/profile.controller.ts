@@ -33,7 +33,6 @@ export class ProfileController {
   @Post('createProfile')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(ProfileFileInterceptor())
-  @ApiBody({ type: CreateProfileDTO })
   async createProfile(
     @Req() req,
     @UploadedFiles()
@@ -56,7 +55,6 @@ export class ProfileController {
   @Put('updateProfile')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(ProfileFileInterceptor())
-  @ApiBody({ type: CreateProfileDTO })
   async updateProfile(
     @Req() req,
     @UploadedFiles()
