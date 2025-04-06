@@ -15,6 +15,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateProfileDTO } from './dto/createProfile.dto';
 import { ProfileService } from './profile';
 import { ProfileFileInterceptor } from './interceptors/photoUpload.interceptor';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+@ApiBearerAuth('Authorization')
 @Controller()
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
@@ -31,6 +33,7 @@ export class ProfileController {
   @Post('createProfile')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(ProfileFileInterceptor())
+  @ApiBody({ type: CreateProfileDTO })
   async createProfile(
     @Req() req,
     @UploadedFiles()
@@ -53,6 +56,7 @@ export class ProfileController {
   @Put('updateProfile')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(ProfileFileInterceptor())
+  @ApiBody({ type: CreateProfileDTO })
   async updateProfile(
     @Req() req,
     @UploadedFiles()
