@@ -1,4 +1,3 @@
-import { UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -9,12 +8,10 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { WsJwtGuard } from './guard/chat.guards';
 import { CustomSocket, JWTPayload } from './interfaces/chatSocket.interface';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
-@UseGuards(WsJwtGuard)
 @WebSocketGateway(5000)
 export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
