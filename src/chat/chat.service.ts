@@ -10,4 +10,14 @@ export class ChatService {
   async saveMessage(saveMessageDto: SaveMessageDto) {
     await this.chatModel.create(saveMessageDto);
   }
+  async getMessages(senderId: string, recipientId: string) {
+    return this.chatModel
+      .find({
+        $or: [
+          { senderId, recipientId },
+          { senderId: recipientId, recipientId: senderId },
+        ],
+      })
+      .sort({ timestamp: 1 });
+  }
 }
