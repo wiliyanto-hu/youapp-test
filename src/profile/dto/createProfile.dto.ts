@@ -8,8 +8,8 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum WeightUnit {
   KG = 'kg',
@@ -60,7 +60,7 @@ export class CreateProfileDTO {
   })
   weightUnit: 'kg';
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
